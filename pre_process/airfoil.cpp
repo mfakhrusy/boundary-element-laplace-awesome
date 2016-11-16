@@ -8,9 +8,20 @@ void Airfoil::read_airfoil() {
 	std::cout << "Please input NACA AIRFOIL (e.g 0015 0012): ";
 	std::cin >> airfoil_type;
 	std::cout << std::endl << "Checking from databases..." << std::endl;
+
 	// check airfoil exist or not in the database
 	if (check_airfoil_from_databases(airfoil_type)) {
 		std::cout << "OK, airfoil data has been read successfully..." << std::endl;
+		std::string airfoil_title, airfoil_coor;
+		//read airfoil data from the databases
+		std::string airfoil_path = "airfoil_databases/" + airfoil_type;
+		std::ifstream airfoil_coordinates(airfoil_path.c_str());
+		if (airfoil_coordinates.is_open()) {
+
+		} else {
+			std::cout << "somehoew, the airfoil data is not exist!" << std::endl;
+		}
+
 	} else {
 		std::cout << "Sorry, airfoil data is not found." << std::endl;
 	}
@@ -29,10 +40,8 @@ bool Airfoil::check_airfoil_from_databases(std::string airfoil_input) {
 				return true;
 			} 
 
-			if (airfoil_databases.eof()) {
-				return false;
-			}
 		}
+		return false;
 		
 	}
 	else {
