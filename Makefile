@@ -8,6 +8,7 @@
 DEST			= .
 
 HDRS			= 	global.hpp				\
+				pre_process/read_airfoil.hpp		\
 	
 LIBS			=	
 
@@ -22,7 +23,8 @@ MAKEFILE		= Makefile
 
 PROGRAM			= BEM_laplace
 
-SRCS			= main.cpp					
+SRCS			= main.cpp					\
+			  pre_process/read_airfoil.cpp			\
 
 OBJS			= $(SRCS:.cpp=.o) 	
 
