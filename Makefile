@@ -8,7 +8,8 @@
 DEST			= .
 
 HDRS			= 	global.hpp				\
-				pre_process/airfoil.hpp		\
+				pre_process/airfoil.hpp			\
+				solver/main_linear_system.hpp		\
 	
 LIBS			=	
 
@@ -25,6 +26,7 @@ PROGRAM			= BEM_laplace
 
 SRCS			= main.cpp					\
 			  pre_process/airfoil.cpp			\
+			  solver/main_linear_system.cpp			\
 
 OBJS			= $(SRCS:.cpp=.o) 	
 

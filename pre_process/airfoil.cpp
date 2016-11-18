@@ -15,8 +15,25 @@ void Airfoil::read_airfoil() {
 		std::string airfoil_title, airfoil_coor;
 		//read airfoil data from the databases
 		std::string airfoil_path = "airfoil_databases/" + airfoil_type;
-		std::ifstream airfoil_coordinates(airfoil_path.c_str());
-		if (airfoil_coordinates.is_open()) {
+		std::ifstream airfoil_input(airfoil_path.c_str()); //in C++11, no need .c_str()
+		
+		if (airfoil_input.is_open()) {
+			//------- READ AIRFOIL DATA AND APPEND TO ARRAY -------
+			std::string airfoil_title, airfoil_coordinate;
+			std::getline(airfoil_input, airfoil_title); // read the first line (title!)
+			int i = 0;
+			while (std::getline(airfoil_input, airfoil_coordinate)) {
+				std::istringstream iss(airfoil_coordinate);
+				double a, b;
+				iss >> a >> b;
+				x.push_back(a);
+				y.push_back(b);
+				i++;
+			}	
+			nodes = i - 1; //define total nodes
+			// sharpen the airfoil's trailing edge, for kutta condition purpose.
+			y[nodes] = 0;
+			y[0] = 0;
 
 		} else {
 			std::cout << "somehoew, the airfoil data is not exist!" << std::endl;
@@ -39,14 +56,11 @@ bool Airfoil::check_airfoil_from_databases(std::string airfoil_input) {
 			if (airfoil_input == read_per_line) {
 				return true;
 			} 
-
 		}
 		return false;
-		
 	}
 	else {
 		std::cout << "There isn't any file named 'list_airfoil.dat'" << std::endl;
 		return false;
 	}
-
 }
