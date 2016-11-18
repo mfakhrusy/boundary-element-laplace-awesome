@@ -24,16 +24,10 @@
 			std::vector<std::vector<double>> h_ij_1;
 			std::vector<std::vector<double>> h_ij_2;
 
-			//BC of variables of the global constant
-			std::vector<double> g_i_1;
-			std::vector<double> h_i_1;
-
-			std::vector<double> g_i_N;
-			std::vector<double> g_i_N_plus_1;
-
-
 
 		public:
+
+			void boundary_condition();
 
 	};
 #endif
