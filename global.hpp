@@ -1,5 +1,5 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef GLOBAL_HPP
+#define GLOBAL_HPP
 
 #include <iostream>
 #include <vector>
@@ -21,6 +21,8 @@ struct Airfoil_Parameters {
 	std::vector<double> y;		//node position on y
 	std::vector<double> s;		//element length
 	std::vector<double> beta;	//beta is the angle between 2 adjacent tangent line
+	std::vector<double> nx;		//normal derivative - x direction
+	std::vector<double> ny;		//normal derivative - y direction
 };
 
 

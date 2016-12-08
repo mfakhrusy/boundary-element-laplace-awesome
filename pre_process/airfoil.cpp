@@ -12,6 +12,7 @@ void Airfoil::airfoil_main_computation(Airfoil_Parameters &airfoil_pars, Paramet
 	std::vector<double> &y		=	airfoil_pars.y;
 	std::vector<double> &s		=	airfoil_pars.s;
 	std::vector<double> &beta	=	airfoil_pars.beta;
+	std::vector<double> &nx		=	airfoil_pars.nx;
 	airfoil_read(x, y, max_node);
 	
 	//calculate length
@@ -19,6 +20,10 @@ void Airfoil::airfoil_main_computation(Airfoil_Parameters &airfoil_pars, Paramet
 
 	//calculate beta
 	beta	=	airfoil_beta_calc(airfoil_pars, max_node);
+
+	//calculate nx and ny
+	nx	=	airfoil_nx_calc(y, s, max_node);
+	
 	
 }
 
@@ -133,5 +138,27 @@ std::vector<double> Airfoil::airfoil_beta_calc(Airfoil_Parameters airfoil_pars, 
 	}
 	
 	return beta;
+}
 
+//calculate nx -> normal derivative on x direction
+std::vector<double> Airfoil::airfoil_nx_calc(std::vector<double> x, std::vector<double> y, std::vector<double> s, int max_node) {
+	
+	std::vector<double> nx(max_node);
+
+	//first, calculate nx on the element (not on node!)
+	//calculate delta x
+	std::vector<double> delta_y(max_node - 1);
+	std::vector<double> temp_nx(max_node - 1);
+
+	for (auto i = 0; i < max_node - 1; i++) {
+		delta_y[i]	=	y[i+1] - y[i];
+		temp_nx[i]	=	-1*delta_y[i]/s[i];
+	}
+
+	//we need to average the adjacent element into one node point.
+	//for edge
+	nx[0]	=	(temp_nx[0] + temp_nx[max_node-2])/(sqrt(pow(temp_nx[0], 2) + pow(temp_nx[max_node-2],2)));
+	std::cout << (temp_nx[0] + temp_nx[max_node-2]) << " " << (sqrt(pow(temp_nx[0], 2) + pow(temp_nx[max_node-2],2)))<< " " << std::endl;
+
+	return nx;
 }

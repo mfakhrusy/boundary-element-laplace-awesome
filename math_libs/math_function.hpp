@@ -1,5 +1,5 @@
-#ifndef MATH_FUNCTION_H
-#define MATH_FUNCTION_H
+#ifndef MATH_FUNCTION_HPP
+#define MATH_FUNCTION_HPP
 
 class Math_Function {
 
