@@ -16,3 +16,9 @@ double Math_Function::angle_cos_rule(double A_this, double B, double C) {
 
 	return acos(temp_cos);
 }
+
+double Math_Function::avg_n(double n_1, double n_2, double n_couple_1, double n_couple_2) {
+	
+	return (n_1 + n_2)/(sqrt(pow(n_1 + n_2, 2) + pow(n_couple_1 + n_couple_2,2)));
+
+}

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <cmath>
+#include <numeric>	//performing accumulation/summation of vectors
 
 struct Parameters {
 
@@ -23,6 +24,9 @@ struct Airfoil_Parameters {
 	std::vector<double> beta;	//beta is the angle between 2 adjacent tangent line
 	std::vector<double> nx;		//normal derivative - x direction
 	std::vector<double> ny;		//normal derivative - y direction
+	std::vector<double> eta;	//shape functions
+	std::vector<double> N1;
+	std::vector<double> N2;
 };
 
 

@@ -9,8 +9,10 @@ class Airfoil {
 	bool airfoil_check_from_databases(std::string airfoil_input);
 	std::vector<double> airfoil_element_length_calc(std::vector<double> x, std::vector<double> y, int max_node);
 	std::vector<double> airfoil_beta_calc(Airfoil_Parameters airfoil_pars, int max_node);
-	std::vector<double> airfoil_nx_calc(std::vector<double> x, std::vector<double> y, std::vector<double> s, int max_node);
-	std::vector<double> airfoil_ny_calc(std::vector<double> x, std::vector<double> y, std::vector<double> s, int max_node);
+	std::vector<double> airfoil_nx_calc(Airfoil_Parameters airfoil_pars, int max_node);
+	std::vector<double> airfoil_ny_calc(Airfoil_Parameters airfoil_pars, int max_node);
+	std::vector<double> airfoil_eta_calc(Airfoil_Parameters airfoil_pars, int max_node);
+
 	// x and y for airfoil coordinates, read it from upper trailing edge, rotate clockwise until lower trailing edge
 
 	public:

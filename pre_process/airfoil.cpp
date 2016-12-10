@@ -7,12 +7,19 @@ Math_Function math_f;
 void Airfoil::airfoil_main_computation(Airfoil_Parameters &airfoil_pars, Parameters &pars) {
 	
 	//make local variables
-	int &max_node			=	pars.max_node;
+	int &max_node			=	pars.max_node;		//HAVE TO BE REFERENCE TO MAX_NODE BECAUSE AIRFOIL_READ IS INPUTING VALUE TO IT TNX
 	std::vector<double> &x		=	airfoil_pars.x;
 	std::vector<double> &y		=	airfoil_pars.y;
 	std::vector<double> &s		=	airfoil_pars.s;
 	std::vector<double> &beta	=	airfoil_pars.beta;
 	std::vector<double> &nx		=	airfoil_pars.nx;
+	std::vector<double> &ny		=	airfoil_pars.ny;
+	std::vector<double> &eta	=	airfoil_pars.eta;
+	std::vector<double> &N1		=	airfoil_pars.N1;
+	std::vector<double> &N2		=	airfoil_pars.N2;
+
+
+	//read the coordinate from databases
 	airfoil_read(x, y, max_node);
 	
 	//calculate length
@@ -22,7 +29,11 @@ void Airfoil::airfoil_main_computation(Airfoil_Parameters &airfoil_pars, Paramet
 	beta	=	airfoil_beta_calc(airfoil_pars, max_node);
 
 	//calculate nx and ny
-	nx	=	airfoil_nx_calc(y, s, max_node);
+	nx	=	airfoil_nx_calc(airfoil_pars, max_node);
+	ny	=	airfoil_ny_calc(airfoil_pars, max_node);
+
+	//calculate eta, N1, and N2
+	eta	=	airfoil_eta_calc(airfoil_pars, max_node);
 	
 	
 }
@@ -141,24 +152,92 @@ std::vector<double> Airfoil::airfoil_beta_calc(Airfoil_Parameters airfoil_pars, 
 }
 
 //calculate nx -> normal derivative on x direction
-std::vector<double> Airfoil::airfoil_nx_calc(std::vector<double> x, std::vector<double> y, std::vector<double> s, int max_node) {
+std::vector<double> Airfoil::airfoil_nx_calc(Airfoil_Parameters airfoil_pars, int max_node) {
 	
 	std::vector<double> nx(max_node);
 
+	//make local variables
+	std::vector<double> x	=	airfoil_pars.x;
+	std::vector<double> y	=	airfoil_pars.y;
+	std::vector<double> s	=	airfoil_pars.s;
+
 	//first, calculate nx on the element (not on node!)
-	//calculate delta x
+	//calculate delta x, delta_y, and temp_nx, temp_ny
+	std::vector<double> delta_x(max_node - 1);
 	std::vector<double> delta_y(max_node - 1);
 	std::vector<double> temp_nx(max_node - 1);
+	std::vector<double> temp_ny(max_node - 1);
 
 	for (auto i = 0; i < max_node - 1; i++) {
+		delta_x[i]	=	x[i+1] - x[i];
 		delta_y[i]	=	y[i+1] - y[i];
 		temp_nx[i]	=	-1*delta_y[i]/s[i];
+		temp_ny[i]	=	delta_x[i]/s[i];
 	}
 
 	//we need to average the adjacent element into one node point.
-	//for edge
-	nx[0]	=	(temp_nx[0] + temp_nx[max_node-2])/(sqrt(pow(temp_nx[0], 2) + pow(temp_nx[max_node-2],2)));
-	std::cout << (temp_nx[0] + temp_nx[max_node-2]) << " " << (sqrt(pow(temp_nx[0], 2) + pow(temp_nx[max_node-2],2)))<< " " << std::endl;
+	//for both edges (the same point obviously, just different node)
+	nx[0]		=	math_f.avg_n(temp_nx[0], temp_nx[max_node-2], temp_ny[0], temp_ny[max_node-2]);
+	nx[max_node-1]	=	nx[0];
+
+	//for other nodes (i = 1 until i = max_node - 2)
+	for (auto i = 1; i < max_node - 1; i++) {
+		nx[i]		=	math_f.avg_n(temp_nx[i-1], temp_nx[i], temp_ny[i-1], temp_ny[i]);
+	}
 
 	return nx;
+}
+
+//calculate ny -> normal derivative on y direction
+std::vector<double> Airfoil::airfoil_ny_calc(Airfoil_Parameters airfoil_pars, int max_node) {
+	
+	std::vector<double> ny(max_node);
+
+	//make local variables
+	std::vector<double> x	=	airfoil_pars.x;
+	std::vector<double> y	=	airfoil_pars.y;
+	std::vector<double> s	=	airfoil_pars.s;
+
+	//first, calculate ny on the element (not on node!)
+	//calculate delta x, delta_y, and temp_nx, temp_ny
+	std::vector<double> delta_x(max_node - 1);
+	std::vector<double> delta_y(max_node - 1);
+	std::vector<double> temp_nx(max_node - 1);
+	std::vector<double> temp_ny(max_node - 1);
+
+	for (auto i = 0; i < max_node - 1; i++) {
+		delta_x[i]	=	x[i+1] - x[i];
+		delta_y[i]	=	y[i+1] - y[i];
+		temp_nx[i]	=	-1*delta_y[i]/s[i];
+		temp_ny[i]	=	delta_x[i]/s[i];
+	}
+
+	//we need to average the adjacent element into one node point.
+	//for both edges (the same point obviously, just different node)
+	ny[0]		=	math_f.avg_n(temp_ny[0], temp_ny[max_node-2], temp_nx[0], temp_nx[max_node-2]);
+	ny[max_node-1]	=	ny[0];
+
+	//for other nodes (i = 1 until i = max_node - 2)
+	for (auto i = 1; i < max_node - 1; i++) {
+		ny[i]		=	math_f.avg_n(temp_ny[i-1], temp_ny[i], temp_nx[i-1], temp_nx[i]);
+	}
+
+	return ny;
+}
+
+//function airfoil_eta_calc -> shape function calculations
+std::vector<double> Airfoil::airfoil_eta_calc(Airfoil_Parameters airfoil_pars, int max_node) {
+
+	std::vector<double> eta(max_node);
+
+	//make local variables
+	std::vector<double> x	=	airfoil_pars.x;
+	std::vector<double> y	=	airfoil_pars.y;
+	std::vector<double> s	=	airfoil_pars.s;
+
+	//summation of the vector
+	double sum_s	=	std::accumulate(s.begin(), s.end(), 0.0);
+	std::cout << sum_s << std::endl;
+
+	return eta;
 }
