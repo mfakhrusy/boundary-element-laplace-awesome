@@ -8,6 +8,7 @@
 5. Compute control point coordinate of each element (middle of element). > dont wanna do this i guess!
 6. Compute nx and ny on nodes, and on control points. nx and ny of nodes is the average of the control points neighbooring nx and ny.
 7. Compute N1 and N2 on each node. Compute \eta first.
+-- DONE
 
 #solver
 8. Looping process from i = 0; i < N

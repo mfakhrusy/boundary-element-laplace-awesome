@@ -10,6 +10,8 @@ DEST			= .
 HDRS			= 	global.hpp				\
 				math_libs/math_function.hpp		\
 				pre_process/airfoil.hpp			\
+				solver/matrix_init.hpp			\
+				solver/matrix_solver.hpp		\
 	
 LIBS			=	
 
@@ -27,6 +29,8 @@ PROGRAM			= BEM_laplace
 SRCS			= main.cpp					\
 			  math_libs/math_function.cpp			\
 			  pre_process/airfoil.cpp			\
+			  solver/matrix_init.cpp			\
+			  solver/matrix_solver.cpp			\
 
 OBJS			= $(SRCS:.cpp=.o) 	
 

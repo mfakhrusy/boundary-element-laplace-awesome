@@ -18,12 +18,11 @@ void Airfoil::airfoil_main_computation(Airfoil_Parameters &airfoil_pars, Paramet
 	std::vector<double> &N1		=	airfoil_pars.N1;
 	std::vector<double> &N2		=	airfoil_pars.N2;
 
-
 	//read the coordinate from databases
 	airfoil_read(x, y, max_node);
 	
 	//calculate length
-	s	=	airfoil_element_length_calc(x, y, max_node);
+	s	=	airfoil_element_length_calc(airfoil_pars, max_node);
 
 	//calculate beta
 	beta	=	airfoil_beta_calc(airfoil_pars, max_node);
@@ -34,8 +33,8 @@ void Airfoil::airfoil_main_computation(Airfoil_Parameters &airfoil_pars, Paramet
 
 	//calculate eta, N1, and N2
 	eta	=	airfoil_eta_calc(airfoil_pars, max_node);
-	
-	
+	N1	=	airfoil_N1_calc(airfoil_pars, max_node);
+	N2	=	airfoil_N2_calc(airfoil_pars, max_node);
 }
 
 void Airfoil::airfoil_read(std::vector<double> &x, std::vector<double> &y, int &max_node) {
@@ -113,9 +112,13 @@ bool Airfoil::airfoil_check_from_databases(std::string airfoil_input) {
 	}
 }
 
-std::vector<double> Airfoil::airfoil_element_length_calc(std::vector<double> x, std::vector<double> y, int max_node) {
+std::vector<double> Airfoil::airfoil_element_length_calc(Airfoil_Parameters airfoil_pars, int max_node) {
 	
 	std::vector<double> length(max_node - 1); //the index is -1 from node index
+
+	//make local variables
+	std::vector<double> x	=	airfoil_pars.x;
+	std::vector<double> y	=	airfoil_pars.y;
 
 	for (auto i = 0; i < max_node - 1; i++) {
 
@@ -231,13 +234,52 @@ std::vector<double> Airfoil::airfoil_eta_calc(Airfoil_Parameters airfoil_pars, i
 	std::vector<double> eta(max_node);
 
 	//make local variables
-	std::vector<double> x	=	airfoil_pars.x;
-	std::vector<double> y	=	airfoil_pars.y;
 	std::vector<double> s	=	airfoil_pars.s;
 
 	//summation of the vector
 	double sum_s	=	std::accumulate(s.begin(), s.end(), 0.0);
-	std::cout << sum_s << std::endl;
+
+	//both edges
+	eta[0]		=	-1;
+	eta[max_node-1]	=	1;
+
+	double temp;
+	
+	//for the rest of the nodes
+	for (auto i = 1; i < max_node - 1; i++) {
+		temp 	=	temp + s[i-1];
+		eta[i]	=	(2*temp/sum_s) - 1;
+	}
 
 	return eta;
+}
+
+//calc N1
+std::vector<double> Airfoil::airfoil_N1_calc(Airfoil_Parameters airfoil_pars, int max_node) {
+	
+	std::vector<double> N1(max_node);
+		
+	//make local vars
+	std::vector<double> eta	=	airfoil_pars.eta;
+
+	for (auto i = 0; i < max_node; i++) {
+		N1[i]	=	0.5*(1 - eta[i]);
+	}
+
+	return N1;
+}
+
+//calc N1
+std::vector<double> Airfoil::airfoil_N2_calc(Airfoil_Parameters airfoil_pars, int max_node) {
+	
+	std::vector<double> N2(max_node);
+			
+	//make local vars
+	std::vector<double> eta	=	airfoil_pars.eta;
+
+	for (auto i = 0; i < max_node; i++) {
+		N2[i]	=	0.5*(1 + eta[i]);
+	}
+	
+	return N2;
 }
