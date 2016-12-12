@@ -1,8 +1,5 @@
 #include "../global.hpp"
 #include "airfoil.hpp"
-#include "../math_libs/math_function.hpp"
-
-Math_Function math_f;
 
 void Airfoil::airfoil_main_computation(Airfoil_Parameters &airfoil_pars, Parameters &pars) {
 	

@@ -1,9 +1,12 @@
 #ifndef AIRFOIL_HPP
 #define AIRFOIL_HPP
+#include "../math_libs/math_function.hpp"
 
 class Math_Function;
 class Airfoil {
 	
+	Math_Function math_f;
+
 	//private parts -- functions
 	void airfoil_read(std::vector<double> &x, std::vector<double> &y, int &max_node);	//max_node is initialized here
 	bool airfoil_check_from_databases(std::string airfoil_input);

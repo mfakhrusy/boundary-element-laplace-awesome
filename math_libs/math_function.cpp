@@ -22,3 +22,33 @@ double Math_Function::avg_n(double n_1, double n_2, double n_couple_1, double n_
 	return (n_1 + n_2)/(sqrt(pow(n_1 + n_2, 2) + pow(n_couple_1 + n_couple_2,2)));
 
 }
+
+//green function
+double Math_Function::green_f(double x, double x_ref, double y, double y_ref) {
+	
+	if (x == x_ref && y == y_ref) {
+		return 0;
+	} else {
+		return log(pow(x - x_ref, 2) + pow(y - y_ref, 2));
+	}
+}
+
+//derivation of green function in x (dG/dx)
+double Math_Function::dgreen_f_dx(double x, double x_ref, double y, double y_ref) {
+	
+	if (x == x_ref) {
+		return 0;
+	} else {
+		return 2*(x - x_ref)/(pow(x - x_ref,2) + pow(y - y_ref,2));
+	}
+}
+
+//derivation of green function in y (dG/dy)
+double Math_Function::dgreen_f_dy(double x, double x_ref, double y, double y_ref) {
+	
+	if (y == y_ref) {
+		return 0;
+	} else {
+		return 2*(y - y_ref)/(pow(x - x_ref,2) + pow(y - y_ref,2));
+	}
+}

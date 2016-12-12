@@ -11,8 +11,8 @@
 
 struct Parameters {
 
+	double v_freestream;	// v_infinity -> input
 	double angle_of_attack;
-	double v_infinity;
 	int max_node;
 };
 
@@ -29,6 +29,11 @@ struct Airfoil_Parameters {
 	std::vector<double> N2;
 };
 
+struct Variables {
+	
+	std::vector<double> G_N_minus;
+	std::vector<double> G_N_plus;
+};
 
 
 #endif
