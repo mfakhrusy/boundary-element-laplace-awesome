@@ -14,8 +14,10 @@ class Matrix_Init {
 	std::vector<double> matrix_init_h1_calc(Airfoil_Parameters airfoil_pars, double x_ref, double y_ref, int max_node);
 	std::vector<double> matrix_init_h2_calc(Airfoil_Parameters airfoil_pars, double x_ref, double y_ref, int max_node);
 	std::vector<double> matrix_init_H_rhs_calc(Airfoil_Parameters airfoil_pars, Parameters pars);
+	std::vector<double> matrix_init_H_lhs_calc(Airfoil_Parameters airfoil_pars, Parameters pars);
 
 	std::vector<double> matrix_init_rhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars);
+	std::vector<std::vector<double>> matrix_init_lhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars);
 
 	public:
 		void matrix_init_main_computation(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars);

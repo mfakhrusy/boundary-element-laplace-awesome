@@ -12,10 +12,12 @@ void Matrix_Init::matrix_init_main_computation(Airfoil_Parameters airfoil_pars, 
 	std::vector<double> y			=	airfoil_pars.y;
 
 	//make local vars
-	std::vector<double> rhs_matrix		=	vars.rhs_matrix;
+	std::vector<double> &rhs_matrix			=	vars.rhs_matrix;
+	std::vector<std::vector<double>> &lhs_matrix	=	vars.lhs_matrix;
 
 	//process
 	rhs_matrix	=	matrix_init_rhs_matrix_calc(airfoil_pars, pars, vars);
+	lhs_matrix	=	matrix_init_lhs_matrix_calc(airfoil_pars, pars, vars);
 
 }
 
@@ -52,6 +54,53 @@ std::vector<double> Matrix_Init::matrix_init_rhs_matrix_calc(Airfoil_Parameters 
 	}
 
 	return rhs_matrix;
+}
+
+//main computation for LHS of equation
+std::vector<std::vector<double>> Matrix_Init::matrix_init_lhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars) {
+
+	//make local pars
+	double max_node		=	pars.max_node;
+	std::vector<std::vector<double>> lhs_matrix(max_node, std::vector<double> (max_node));//row x column
+
+	//make local airfoil_pars 
+	std::vector<double> nx	=	airfoil_pars.nx;
+	std::vector<double> ny	=	airfoil_pars.ny;
+	std::vector<double> x	=	airfoil_pars.x;
+	std::vector<double> y	=	airfoil_pars.y;
+
+	//calculate sigma 
+	std::vector<double> sigma_H_ij	=	matrix_init_H_lhs_calc(airfoil_pars, pars);
+
+	for (auto i = 0; i < max_node; i++) {
+		for (auto j = 0; j < max_node; j++) {
+
+			if (j == max_node - 1) {
+				
+				lhs_matrix[i][j]	=	sigma_H_ij[i];
+				
+			} else {
+			
+				//calculate g_ij_2
+				std::vector<double> g_ij_2	=	matrix_init_g2_calc(airfoil_pars, x[j], y[j], max_node);
+				double temp_g_ij_2		=	g_ij_2[i];
+
+				//calculate g_i(j+1)_1
+				double temp_g_ij_1;
+				if (j != max_node - 1) {	//basically said: if j = max_node - 1 -> j = 1;
+					std::vector<double> g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[j+1], y[j+1], max_node);
+					temp_g_ij_1			=	g_ij_1[i];
+				} else {
+					std::vector<double> g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[1], y[1], max_node);
+					temp_g_ij_1			=	g_ij_1[i];
+				}
+
+				lhs_matrix[i][j]	=	temp_g_ij_2	+	temp_g_ij_1;
+			}
+		}
+	}
+
+	return lhs_matrix;
 }
 
 //calculate phi
@@ -174,7 +223,7 @@ std::vector<double> Matrix_Init::matrix_init_h2_calc(Airfoil_Parameters airfoil_
 	return h2;
 }
 
-//function for calculate Hij
+//function for calculate Hij of RHS
 std::vector<double> Matrix_Init::matrix_init_H_rhs_calc(Airfoil_Parameters airfoil_pars, Parameters pars) {
 
 	//make local vars
@@ -219,6 +268,59 @@ std::vector<double> Matrix_Init::matrix_init_H_rhs_calc(Airfoil_Parameters airfo
 			
 			//calculate the partial summation
 			double temp_sum	=	(c_delta_ij - temp_h_ij_2 - temp_h_ij_1)*phi_j;
+
+			//sum
+			sum_H_phi	=	sum_H_phi + temp_sum;
+		}
+		
+		H[i]	=	sum_H_phi;
+
+	}
+	return H;
+}
+
+//function for calculate Hij of LHS
+std::vector<double> Matrix_Init::matrix_init_H_lhs_calc(Airfoil_Parameters airfoil_pars, Parameters pars) {
+
+	//make local vars
+	int max_node			=	pars.max_node;
+	double v_freestream		=	pars.v_freestream;
+	double angle_of_attack		=	pars.angle_of_attack;
+	std::vector<double> x		=	airfoil_pars.x;
+	std::vector<double> y		=	airfoil_pars.y;
+	std::vector<double> s		=	airfoil_pars.s;
+	std::vector<double> beta	=	airfoil_pars.beta;
+	
+	std::vector<double> H(max_node);
+	for (auto i = 0; i < max_node; i++) {
+
+		double sum_H_phi;
+		for (auto j = 0; j < max_node; j++) {
+			//calculate c_delta_ij
+			double c_delta_ij;	
+			if (j == i) {
+				c_delta_ij	=	beta[i]/(2*M_PI);
+			}
+			else {
+				c_delta_ij	=	0;
+			}
+
+			//calculate h_ij_2
+			std::vector<double> h_ij_2	=	matrix_init_h2_calc(airfoil_pars, x[j], y[j], max_node);
+			double temp_h_ij_2		=	h_ij_2[i];
+
+			//calculate h_i(j+1)_1
+			double temp_h_ij_1;
+			if (j != max_node - 1) {
+				std::vector<double> h_ij_1	=	matrix_init_h1_calc(airfoil_pars, x[j+1], y[j+1], max_node);
+				temp_h_ij_1			=	h_ij_1[i];
+			} else {
+				std::vector<double> h_ij_1	=	matrix_init_h1_calc(airfoil_pars, x[1], y[1], max_node);
+				temp_h_ij_1			=	h_ij_1[i];
+			}
+
+			//calculate the partial summation
+			double temp_sum	=	(c_delta_ij - temp_h_ij_2 - temp_h_ij_1); //the difference from RHS is here, no phi_j
 
 			//sum
 			sum_H_phi	=	sum_H_phi + temp_sum;
