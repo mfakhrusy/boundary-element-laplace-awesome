@@ -31,8 +31,7 @@ struct Airfoil_Parameters {
 
 struct Variables {
 	
-	std::vector<double> G_N_minus;
-	std::vector<double> G_N_plus;
+	std::vector<double> rhs_matrix;
 };
 
 

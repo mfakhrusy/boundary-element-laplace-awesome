@@ -52,3 +52,17 @@ double Math_Function::dgreen_f_dy(double x, double x_ref, double y, double y_ref
 		return 2*(y - y_ref)/(pow(x - x_ref,2) + pow(y - y_ref,2));
 	}
 }
+
+double Math_Function::dgreen_f_dn(double x, double x_ref, double nx, double y, double y_ref, double ny) {
+	
+	return dgreen_f_dx(x, x_ref, y, y_ref)*nx + dgreen_f_dy(x, x_ref, y, y_ref)*ny;
+}
+
+double Math_Function::knonecker_delta(int i, int j) {
+	
+	if (i == j) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
