@@ -15,6 +15,7 @@ class Math_Function {
 	//friend classes below can access the functions above (which are privates)
 	friend class Airfoil;
 	friend class Matrix_Init;
+	friend class Matrix_Solver;
 };
 
 #endif

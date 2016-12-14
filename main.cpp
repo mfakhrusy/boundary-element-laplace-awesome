@@ -15,9 +15,11 @@ int main() {
 	Initialization inits;
 	Airfoil airfoil;
 	Matrix_Init matrix_init;
+	Matrix_Solver matrix_solver;
 
 	//solving process
 	inits.initialization_read_input(pars);
 	airfoil.airfoil_main_computation(airfoil_pars, pars);
 	matrix_init.matrix_init_main_computation(airfoil_pars, pars, vars);
+	matrix_solver.matrix_solver_main_computation(vars, pars.max_node);
 }

@@ -22,7 +22,7 @@ void Matrix_Init::matrix_init_main_computation(Airfoil_Parameters airfoil_pars, 
 }
 
 //main computation for RHS of equation
-std::vector<double> Matrix_Init::matrix_init_rhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars) {
+std::vector<double> Matrix_Init::matrix_init_rhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables vars) {
 
 	//make local pars
 	double max_node		=	pars.max_node;
@@ -57,7 +57,7 @@ std::vector<double> Matrix_Init::matrix_init_rhs_matrix_calc(Airfoil_Parameters 
 }
 
 //main computation for LHS of equation
-std::vector<std::vector<double>> Matrix_Init::matrix_init_lhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars) {
+std::vector<std::vector<double>> Matrix_Init::matrix_init_lhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables vars) {
 
 	//make local pars
 	double max_node		=	pars.max_node;
