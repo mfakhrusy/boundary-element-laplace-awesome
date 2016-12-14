@@ -33,6 +33,7 @@ struct Variables {
 	
 	std::vector<double> rhs_matrix;
 	std::vector<std::vector<double>> lhs_matrix;
+	std::vector<double> lhs_result;	//Ax = y, this is the x.
 };
 
 
