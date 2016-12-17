@@ -1,53 +1,39 @@
 #include "../global.hpp"
 #include "matrix_solver.hpp"
 	
-void Matrix_Solver::matrix_solver_main_computation(Variables &vars, int max_node) {
+void Matrix_Solver::matrix_solver_main_computation(Variables &vars) {
 
 	//make local vars
 	std::vector<double> &lhs_result	=	vars.lhs_result;
+
 	//cut the matrix
-	matrix_solver_cut_matrix(vars, max_node);
+	matrix_solver_cut_matrix(vars);
 
 	//solve it
 	lhs_result	=	matrix_solver_solve_matrix(vars);
-	
 }
 
 //first, cut the matrix from 131x131 to 130x130 (lhs) and 131 to 130 (rhs)
-void Matrix_Solver::matrix_solver_cut_matrix(Variables &vars, int max_node) {
+void Matrix_Solver::matrix_solver_cut_matrix(Variables &vars) {
 
 	//make local vars
 	std::vector<double> &rhs_matrix			=	vars.rhs_matrix;
 	std::vector<std::vector<double>> &lhs_matrix	=	vars.lhs_matrix;
 
+	const int max_node	=	rhs_matrix.size();
+
 	//delete the rhs_first element
-	std::ofstream output_file;
-	output_file.open("output-temp/rhs_before_cut.dat");
-	for (auto i = 0; i < rhs_matrix.size(); i++) {
-		output_file << i << " " << rhs_matrix[i] << std::endl;
-	}
-	output_file.close();
+	misc.print_to_file(rhs_matrix, "rhs_before_cut.dat");
 	
 	//cut function start
 	rhs_matrix.erase(rhs_matrix.begin(), rhs_matrix.begin() + 1); //delete the 0th node
 	//cut function end 
 
-	output_file.open("output-temp/rhs_after_cut.dat");
-	for (auto i = 0; i < rhs_matrix.size(); i++) {
-		output_file << i << " " << rhs_matrix[i] << std::endl;
-	}
-	output_file.close();
+	misc.print_to_file(rhs_matrix, "rhs_after_cut.dat");
 
 	//delete the lhs first row and column
 
-	output_file.open("output-temp/lhs_before_cut.dat");
-	for (auto i = 0; i < lhs_matrix.size(); i++) {
-		for (auto j = 0; j < lhs_matrix[i].size(); j++) {
-			output_file << lhs_matrix[i][j] << " ";
-		}
-		output_file << std::endl;
-	}
-	output_file.close();
+	misc.print_to_file(lhs_matrix, "lhs_before_cut.dat");
 
 	//cut function start
 	lhs_matrix.erase(lhs_matrix.begin(), lhs_matrix.begin() + 1);
@@ -56,19 +42,13 @@ void Matrix_Solver::matrix_solver_cut_matrix(Variables &vars, int max_node) {
 	}
 	//cut function end 
 
-	output_file.open("output-temp/lhs_after_cut.dat");
-	for (auto i = 0; i < lhs_matrix.size(); i++) {
-		for (auto j = 0; j < lhs_matrix[i].size(); j++) {
-			output_file << lhs_matrix[i][j] << " ";
-		}
-		output_file << std::endl;
-	}
-	output_file.close();
+	misc.print_to_file(lhs_matrix, "lhs_after_cut.dat");
 
 }
 
 //gauss elimination part, make upper triangle.
 std::vector<double> Matrix_Solver::matrix_solver_solve_matrix(Variables &vars) {
+	//from math_libs
 	
 	//make local vars
 	std::vector<std::vector<double>> lhs	=	vars.lhs_matrix;
@@ -87,15 +67,7 @@ std::vector<double> Matrix_Solver::matrix_solver_solve_matrix(Variables &vars) {
 	}
 
 	//print the newly born matrix
-	std::ofstream output_file;
-	output_file.open("output-temp/lhs_plus_rhs.dat");
-	for (auto i = 0; i < lhs_temp.size(); i++) {
-		for (auto j = 0; j < lhs_temp[i].size(); j++) {
-			output_file << lhs_temp[i][j] << " ";
-		}
-		output_file << std::endl;
-	}
-	output_file.close();
+	misc.print_to_file(lhs_temp, "lhs_plus_rhs.dat");
 
 	for (auto i = 0; i < max_node; i++) {
 	
@@ -109,7 +81,6 @@ std::vector<double> Matrix_Solver::matrix_solver_solve_matrix(Variables &vars) {
 			max_row	=	k;
 			}
 		}
-
 
 		//swap maximum row with current row (column by column)
 		for (auto k = 1; k < max_node; k++) {
@@ -132,14 +103,7 @@ std::vector<double> Matrix_Solver::matrix_solver_solve_matrix(Variables &vars) {
 
 	}
 
-	output_file.open("output-temp/lhs_after_gauss.dat");
-	for (auto i = 0; i < lhs_temp.size(); i++) {
-		for (auto j = 0; j < lhs_temp[i].size(); j++) {
-			output_file << lhs_temp[i][j] << " ";
-		}
-		output_file << std::endl;
-	}
-	output_file.close();
+	misc.print_to_file(lhs_temp, "lhs_after_gauss.dat");
 
 	//solve equation Ax=b for an upper triangular matrix lhs_temp
 	
@@ -150,13 +114,7 @@ std::vector<double> Matrix_Solver::matrix_solver_solve_matrix(Variables &vars) {
 		}
 	}
 
-	output_file.open("output-temp/lhs_result.dat");
-	for (auto i = 0; i < lhs_result.size(); i++) {
-		output_file << i << " " << lhs_result[i];
-		output_file << std::endl;
-	}
-	output_file.close();
-
+	misc.print_to_file(lhs_result, "lhs_result.dat");
 
 	return lhs_result;
 }

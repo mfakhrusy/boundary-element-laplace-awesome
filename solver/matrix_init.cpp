@@ -18,7 +18,6 @@ void Matrix_Init::matrix_init_main_computation(Airfoil_Parameters airfoil_pars, 
 	//process
 	rhs_matrix	=	matrix_init_rhs_matrix_calc(airfoil_pars, pars, vars);
 	lhs_matrix	=	matrix_init_lhs_matrix_calc(airfoil_pars, pars, vars);
-
 }
 
 //main computation for RHS of equation
@@ -77,7 +76,7 @@ std::vector<std::vector<double>> Matrix_Init::matrix_init_lhs_matrix_calc(Airfoi
 
 			if (j == max_node - 1) {
 				
-				lhs_matrix[i][j]	=	sigma_H_ij[i];
+				lhs_matrix[i][j]	=	-1*sigma_H_ij[i];
 				
 			} else {
 			
@@ -86,16 +85,25 @@ std::vector<std::vector<double>> Matrix_Init::matrix_init_lhs_matrix_calc(Airfoi
 				double temp_g_ij_2		=	g_ij_2[i];
 
 				//calculate g_i(j+1)_1
+				std::vector<double> g_ij_1;
 				double temp_g_ij_1;
 				if (j != max_node - 1) {	//basically said: if j = max_node - 1 -> j = 1;
-					std::vector<double> g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[j+1], y[j+1], max_node);
+					g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[j+1], y[j+1], max_node);
 					temp_g_ij_1			=	g_ij_1[i];
 				} else {
-					std::vector<double> g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[1], y[1], max_node);
+					//impossible to reach LOLOLOLOLOLWKWKWK
+					g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[1], y[1], max_node);
 					temp_g_ij_1			=	g_ij_1[i];
 				}
 
+				if (j == 5 && i == 99) {
+					for (auto k = 0; k < max_node; k++) {
+						std::cout << k << " " << g_ij_1[k] << " " << g_ij_2[k] << std::endl;
+					}
+				}
+
 				lhs_matrix[i][j]	=	temp_g_ij_2	+	temp_g_ij_1;
+
 			}
 		}
 	}
@@ -142,6 +150,7 @@ std::vector<double> Matrix_Init::matrix_init_g1_calc(Airfoil_Parameters airfoil_
 	for (auto i = 1; i < max_node; i++) {
 
 		g1[i]	=	-1*N1[i]*s[i-1]*math_f.green_f(x[i], x_ref, y[i], y_ref);
+
 	}
 
 	//0th node

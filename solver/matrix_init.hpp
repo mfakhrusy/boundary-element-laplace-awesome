@@ -1,11 +1,14 @@
 #ifndef MATRIX_INIT_HPP
 #define MATRIX_INIT_HPP
 #include "../math_libs/math_function.hpp"
+#include "../misc/miscellaneous.hpp"
 
 class Math_Function;
+class Miscellaneous;
 class Matrix_Init {
 
 	Math_Function math_f;
+	Miscellaneous misc;
 
 	double matrix_init_phi_calc(double x, double y, Parameters pars);
 	double matrix_init_dphi_dn_calc(double nx, double ny, Parameters pars);

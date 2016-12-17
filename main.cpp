@@ -21,5 +21,5 @@ int main() {
 	inits.initialization_read_input(pars);
 	airfoil.airfoil_main_computation(airfoil_pars, pars);
 	matrix_init.matrix_init_main_computation(airfoil_pars, pars, vars);
-	matrix_solver.matrix_solver_main_computation(vars, pars.max_node);
+	matrix_solver.matrix_solver_main_computation(vars);
 }

@@ -23,7 +23,7 @@ double Math_Function::avg_n(double n_1, double n_2, double n_couple_1, double n_
 
 }
 
-//green function
+//green function -> for g calc
 double Math_Function::green_f(double x, double x_ref, double y, double y_ref) {
 	
 	if (x == x_ref && y == y_ref) {
@@ -53,6 +53,7 @@ double Math_Function::dgreen_f_dy(double x, double x_ref, double y, double y_ref
 	}
 }
 
+//derivation in n -> for h calc
 double Math_Function::dgreen_f_dn(double x, double x_ref, double nx, double y, double y_ref, double ny) {
 	
 	return dgreen_f_dx(x, x_ref, y, y_ref)*nx + dgreen_f_dy(x, x_ref, y, y_ref)*ny;
