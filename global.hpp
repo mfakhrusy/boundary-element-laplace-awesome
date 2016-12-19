@@ -27,6 +27,9 @@ struct Airfoil_Parameters {
 	std::vector<double> eta;	//shape functions
 	std::vector<double> N1;
 	std::vector<double> N2;
+
+	std::vector<double> dx;
+	std::vector<double> dy;
 };
 
 struct Variables {

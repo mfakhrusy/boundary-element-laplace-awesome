@@ -1,4 +1,5 @@
 #include "../global.hpp"
+#include <iomanip>
 #include "matrix_solver.hpp"
 	
 void Matrix_Solver::matrix_solver_main_computation(Variables &vars) {
@@ -68,7 +69,8 @@ std::vector<double> Matrix_Solver::matrix_solver_solve_matrix(Variables &vars) {
 
 	//print the newly born matrix
 	misc.print_to_file(lhs_temp, "lhs_plus_rhs.dat");
-
+	//GAUSS START
+	
 	for (auto i = 0; i < max_node; i++) {
 	
 		//search for the maximum in this column
@@ -113,8 +115,10 @@ std::vector<double> Matrix_Solver::matrix_solver_solve_matrix(Variables &vars) {
 			lhs_temp[j][max_node]	-=	lhs_temp[j][i]*lhs_result[i];
 		}
 	}
+	//GAUSS END
 
 	misc.print_to_file(lhs_result, "lhs_result.dat");
 
 	return lhs_result;
+
 }

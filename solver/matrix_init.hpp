@@ -22,6 +22,29 @@ class Matrix_Init {
 	std::vector<double> matrix_init_rhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables vars);
 	std::vector<std::vector<double>> matrix_init_lhs_matrix_calc(Airfoil_Parameters airfoil_pars, Parameters pars, Variables vars);
 
+
+	//================= 2nd version of g1 and g2 calculation ==============
+	class G_Calc {
+
+		Math_Function math_f;
+		double a_calc(double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1);
+		double b_calc(double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1);
+		double c_calc(double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1);
+
+		double I_1_calc(double a, double b, double c);
+		double I_2_calc(double a, double b, double c);
+		double I_3_calc(double a, double b, double c, double I_1, double I_2);
+		double I_4_calc(double a, double b, double c, double I_3);
+
+		public:
+			//double g_ij_calc(double s, double I_3, double I_4);
+			double g_ij_calc(double s, double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1);
+
+	}g_calc;
+
+	//lhs v2
+	std::vector<std::vector<double>> matrix_init_lhs_matrix_calc_v2(Airfoil_Parameters airfoil_pars, Parameters pars, Variables vars);
+
 	public:
 		void matrix_init_main_computation(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars);
 };

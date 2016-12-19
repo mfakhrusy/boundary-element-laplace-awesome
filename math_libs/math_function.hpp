@@ -11,6 +11,7 @@ class Math_Function {
 	double dgreen_f_dy(double x, double x_ref, double y, double y_ref);
 	double dgreen_f_dn(double x, double x_ref, double nx, double y, double y_ref, double ny);
 	double knonecker_delta(int i, int j);
+	double discriminant(double a, double b, double c);
 
 	//friend classes below can access the functions above (which are privates)
 	friend class Airfoil;

@@ -67,3 +67,8 @@ double Math_Function::knonecker_delta(int i, int j) {
 		return 0;
 	}
 }
+
+double Math_Function::discriminant(double a, double b, double c) {
+	
+	return b*b - 4*a*c;
+}

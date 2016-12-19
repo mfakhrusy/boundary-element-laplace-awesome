@@ -236,14 +236,21 @@ std::vector<double> Airfoil::airfoil_eta_calc(Airfoil_Parameters airfoil_pars, i
 	//summation of the vector
 	double sum_s	=	std::accumulate(s.begin(), s.end(), 0.0);
 
-	//both edges
-	eta[0]		=	-1;
+	//both edges //CHANGED (THIS IS CHANGED)
+	//eta[max_node-1]	=	1;
+	//eta[0]		=	-1;
+	//
+	//INTO THIS ONE
 	eta[max_node-1]	=	1;
+	eta[0]		=	eta[max_node-1];
+	eta[1]		=	-1;
+
 
 	double temp;
 	
 	//for the rest of the nodes
-	for (auto i = 1; i < max_node - 1; i++) {
+	//for (auto i = 1; i < max_node - 1; i++) { // CHANGED FROM i = 1 to i = 2 because of the above reason
+	for (auto i = 2; i < max_node - 1; i++) {
 		temp 	=	temp + s[i-1];
 		eta[i]	=	(2*temp/sum_s) - 1;
 	}

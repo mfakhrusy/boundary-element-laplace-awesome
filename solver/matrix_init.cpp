@@ -18,6 +18,14 @@ void Matrix_Init::matrix_init_main_computation(Airfoil_Parameters airfoil_pars, 
 	//process
 	rhs_matrix	=	matrix_init_rhs_matrix_calc(airfoil_pars, pars, vars);
 	lhs_matrix	=	matrix_init_lhs_matrix_calc(airfoil_pars, pars, vars);
+
+	misc.print_to_file(airfoil_pars.N1, "n1.dat");
+	misc.print_to_file(airfoil_pars.N2, "n2.dat");
+	misc.print_to_file(airfoil_pars.x, "coord_x.dat");
+	misc.print_to_file(airfoil_pars.y, "coord_y.dat");
+	misc.print_to_file(airfoil_pars.s, "s.dat");
+	misc.print_to_file(airfoil_pars.nx, "nx.dat");
+	misc.print_to_file(airfoil_pars.ny, "ny.dat");
 }
 
 //main computation for RHS of equation
@@ -87,22 +95,19 @@ std::vector<std::vector<double>> Matrix_Init::matrix_init_lhs_matrix_calc(Airfoi
 				//calculate g_i(j+1)_1
 				std::vector<double> g_ij_1;
 				double temp_g_ij_1;
-				if (j != max_node - 1) {	//basically said: if j = max_node - 1 -> j = 1;
-					g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[j+1], y[j+1], max_node);
-					temp_g_ij_1			=	g_ij_1[i];
-				} else {
-					//impossible to reach LOLOLOLOLOLWKWKWK
-					g_ij_1	=	matrix_init_g1_calc(airfoil_pars, x[1], y[1], max_node);
-					temp_g_ij_1			=	g_ij_1[i];
-				}
+				//if (j != max_node - 1) {	//basically said: if j = max_node - 1 -> j = 1;
+				g_ij_1		=	matrix_init_g1_calc(airfoil_pars, x[j+1], y[j+1], max_node);
+				temp_g_ij_1	=	g_ij_1[i];
+				//} 
+				//else {
+				//	//impossible to reach LOLOLOLOLOLWKWKWK
+				//	g_ij_1		=	matrix_init_g1_calc(airfoil_pars, x[1], y[1], max_node);
+				//	temp_g_ij_1	=	g_ij_1[i];
+				//}
 
-				if (j == 5 && i == 99) {
-					for (auto k = 0; k < max_node; k++) {
-						std::cout << k << " " << g_ij_1[k] << " " << g_ij_2[k] << std::endl;
-					}
-				}
 
 				lhs_matrix[i][j]	=	temp_g_ij_2	+	temp_g_ij_1;
+				std::cout << temp_g_ij_1 << " " << temp_g_ij_2 << std::endl;
 
 			}
 		}
@@ -282,7 +287,7 @@ std::vector<double> Matrix_Init::matrix_init_H_rhs_calc(Airfoil_Parameters airfo
 			sum_H_phi	=	sum_H_phi + temp_sum;
 		}
 		
-		H[i]	=	sum_H_phi;
+		H[i]	=	1;//sum_H_phi;
 
 	}
 	return H;
@@ -335,8 +340,152 @@ std::vector<double> Matrix_Init::matrix_init_H_lhs_calc(Airfoil_Parameters airfo
 			sum_H_phi	=	sum_H_phi + temp_sum;
 		}
 		
-		H[i]	=	sum_H_phi;
+		H[i]	=	1;//sum_H_phi;
 
 	}
 	return H;
+}
+
+//BELOW IS THE SECOND VERSION OF g1 and g2
+//first: a_calc
+double Matrix_Init::G_Calc::a_calc(double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1) {
+	
+	return 0.25*(pow(x_j,2) + pow(x_j1,2)) + 0.5*x_j1*x_ref + 0.25*(pow(y_j,2) + pow(y_j1,2)) + 0.5*y_j1*y_ref;
+}
+
+//second: b_calc
+double Matrix_Init::G_Calc::b_calc(double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1) {
+	
+	double temp_1 = 0.5*(pow(x_j1,2) - pow(x_j,2)) - x_j1*x_ref + x_j*x_ref;
+	double temp_2 = 0.5*(pow(y_j1,2) - pow(y_j,2)) - y_j1*y_ref + y_j*y_ref;
+
+	return temp_1 + temp_2;
+}
+
+//second: c_calc
+double Matrix_Init::G_Calc::c_calc(double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1) {
+	
+	double temp_1 = 0.25*(pow(x_j1,2) + pow(x_j,2)) + pow(x_ref,2) + 0.5*x_j1*x_ref - x_j1*x_ref - x_j*x_ref;
+	double temp_2 = 0.25*(pow(y_j1,2) + pow(y_j,2)) + pow(y_ref,2) + 0.5*y_j1*y_ref - y_j1*y_ref - y_j*y_ref;
+
+	return temp_1 + temp_2;
+}
+
+//compute I1
+double Matrix_Init::G_Calc::I_1_calc(double a, double b, double c) {
+	
+	double delta 	= 	math_f.discriminant(a, b,c);
+	double temp_1 	=	2/sqrt(-1*delta); 
+	double temp_2	=	atan((sqrt(-1*delta))/(c - a));
+
+	return temp_1*temp_2;
+}
+
+//compute I2
+double Matrix_Init::G_Calc::I_2_calc(double a, double b, double c) {
+
+	double delta 	= 	math_f.discriminant(a, b,c);
+	double temp_1	=	1/(2*a);
+	double temp_2	=	log((a + b + c)/(a - b + c));
+	double temp_3	=	b/(a*sqrt(-1*delta));
+	double temp_4	=	atan((sqrt(-1*delta))/(c - a));
+
+	return (temp_1*temp_2) - (temp_3*temp_4); 
+}
+
+//compute I3
+double Matrix_Init::G_Calc::I_3_calc(double a, double b, double c, double I_1, double I_2) {
+	
+	return log((a + b + c)*(a - b + c)) - 4 + b*I_2 + 2*c*I_1; 
+}
+
+//compute I4
+double Matrix_Init::G_Calc::I_4_calc(double a, double b, double c, double I_3) {
+	
+	double temp_1	=	1/(2*a);
+	double temp_2	=	(a + b + c)*log(a + b + c);
+	double temp_3	=	(a - b + c)*log(a - b + c);
+	double temp_4	=	2*b;
+	double temp_5	=	(b*I_3)/(2*a);
+
+	return temp_1*(temp_2 - temp_3 - temp_4) - temp_5;
+}
+
+//compute general formula of g_ij (either 1 or 2 can use this)
+double Matrix_Init::G_Calc::g_ij_calc(double s, double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1) {
+
+	//calculate a b and c
+	double a	=	a_calc(x_ref, x_j, x_j1, y_ref, y_j, y_j1); 
+	double b	=	b_calc(x_ref, x_j, x_j1, y_ref, y_j, y_j1); 
+	double c	=	c_calc(x_ref, x_j, x_j1, y_ref, y_j, y_j1); 
+
+	//compute I_1 I_2 I_3 and I_4
+	double I_1	=	I_1_calc(a, b, c);
+	double I_2	=	I_2_calc(a, b, c);
+	double I_3	=	I_3_calc(a, b, c, I_1, I_2);
+	double I_4	=	I_4_calc(a, b, c, I_3);
+
+	//compute g_ij
+	
+	double temp_1	=	-1*s/(8*M_PI);
+	double temp_2	=	0.5*(I_3 - I_4);
+
+	return temp_1*temp_2;
+}
+
+//now compute another lhs (version two
+
+std::vector<std::vector<double>> Matrix_Init::matrix_init_lhs_matrix_calc_v2(Airfoil_Parameters airfoil_pars, Parameters pars, Variables vars) {
+	
+	//make local pars
+	double max_node		=	pars.max_node;
+	std::vector<std::vector<double>> lhs_matrix(max_node, std::vector<double> (max_node));//row x column
+
+	//make local airfoil_pars 
+	std::vector<double> nx	=	airfoil_pars.nx;
+	std::vector<double> ny	=	airfoil_pars.ny;
+	std::vector<double> x	=	airfoil_pars.x;
+	std::vector<double> y	=	airfoil_pars.y;
+	std::vector<double> s	=	airfoil_pars.s;
+
+	//calculate sigma 
+	std::vector<double> sigma_H_ij	=	matrix_init_H_lhs_calc(airfoil_pars, pars);
+
+	for (auto i = 0; i < max_node; i++) {
+		for (auto j = 0; j < max_node; j++) {
+
+			if (j == max_node - 1) {
+				
+				lhs_matrix[i][j]	=	-1*sigma_H_ij[i];
+				
+			} else {
+				//calculate g_ij_1
+				double temp_g_ij_1;
+
+				if (i == 0 || j == 0) {
+					temp_g_ij_1	=	0; //it will be cut anyway, so 0 is the best deal
+				} else if (j == max_node - 1 && i == 1) {
+					temp_g_ij_1	=	(s[j-1]/(8*M_PI))*(1 - 2*log(s[j-1]));
+				} else if (i == j + 1) {
+					temp_g_ij_1	=	(s[j-1]/(8*M_PI))*(1 - 2*log(s[j-1]));
+				} else if (i == j) {
+					temp_g_ij_1	=	(s[j-1]/(8*M_PI))*(3 - 2*log(s[j-1]));
+				} else {
+				
+				}
+
+
+				//calculate g_ij_2
+				double temp_g_ij_2;
+
+		
+				lhs_matrix[i][j]	=	temp_g_ij_2	+	temp_g_ij_1;
+
+			}
+		}
+	}
+
+	return lhs_matrix;
+
+
 }
