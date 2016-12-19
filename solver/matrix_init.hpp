@@ -24,7 +24,7 @@ class Matrix_Init {
 
 
 	//================= 2nd version of g1 and g2 calculation ==============
-	class G_Calc {
+	class G_H_Calc {
 
 		Math_Function math_f;
 		double a_calc(double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1);
@@ -39,8 +39,9 @@ class Matrix_Init {
 		public:
 			//double g_ij_calc(double s, double I_3, double I_4);
 			double g_ij_calc(double s, double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1);
+			double h_ij_calc(double s, double x_ref, double x_j, double x_j1, double y_ref, double y_j, double y_j1);
 
-	}g_calc;
+	}g_calc, h_calc;
 
 	//lhs v2
 	std::vector<std::vector<double>> matrix_init_lhs_matrix_calc_v2(Airfoil_Parameters airfoil_pars, Parameters pars, Variables vars);
