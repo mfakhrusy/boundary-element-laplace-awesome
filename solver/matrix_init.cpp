@@ -218,7 +218,6 @@ std::vector<double> Matrix_Init::matrix_init_H_rhs_calc(Airfoil_Parameters airfo
 
 	std::vector<double> H(max_node);
 	for (auto i = 0; i < max_node; i++) {
-		double H_fraction	=	1/max_node;
 		double sum_H_phi;
 		for (auto j = 0; j < max_node; j++) {
 
@@ -226,34 +225,24 @@ std::vector<double> Matrix_Init::matrix_init_H_rhs_calc(Airfoil_Parameters airfo
 			//======= calculate h_ij_1 =======
 			//================================
 			double temp_h_ij_1;
-//			if (i == j) {
-//				temp_h_ij_1	=	0;
-//			} else if (j == max_node - 1 && i == 1) {
-//				temp_h_ij_1	=	0;
-//			} else if (i == j + 1) {
-//				temp_h_ij_1	=	0;
-//			} else {
-	
+			if (i == j || j == 1) {
+				temp_h_ij_1	=	0;
+			} else {
 				for (auto k = 0; k < n; k++) {
 					f_sigma[k] = h_calc.h_1_integration_function(sigma[k], nx[j], x[i], x[j], x[j+1], ny[j], y[i], y[j], y[j+1]);
 				}
 				misc.neumann_bc(f_sigma);
 				//integration process
 				temp_h_ij_1	=	-1*(s[j-1]/(8*M_PI))*math_f.integral_simpson(sigma, f_sigma);
-		
-//			}
+			}
 			//================================
 			//======= calculate h_ij_2 =======
 			//================================
 			double temp_h_ij_2;
-//			if (i == j) {
-//				temp_h_ij_2	=	0;
-//			} else if (j == 1 && i == max_node - 1) {
-//				temp_h_ij_2	=	0;	
-//			} else if (i == j - 1) {
-//				temp_h_ij_2	=	0;	
-//			} else if (j == 1) {
-			if (j == 1) {
+			if (i == j || j == 1) {
+			temp_h_ij_2	=	0;
+			} else if (j == 1) {
+//			if (j == 1) {
 				for (auto k = 0; k < n; k++) {
 					f_sigma[k] = h_calc.h_2_integration_function(sigma[k], nx[max_node-1], x[i], x[max_node-1], x[1], ny[max_node-1], y[i], y[max_node-1], y[1]);
 				}
@@ -283,7 +272,6 @@ std::vector<double> Matrix_Init::matrix_init_H_rhs_calc(Airfoil_Parameters airfo
 
 			//calculate phi_j
 			double phi_j	=	matrix_init_phi_calc(x[j], y[j], pars);	
-//			double temp_sum	=	H_fraction*phi_j;
 //			double temp_sum	=	(temp_h_ij_1 + temp_h_ij_2 + c_delta)*phi_j;
 			double temp_sum	=	(temp_h_ij_1 + temp_h_ij_2 + c_delta)*(y[j]*cos(angle_of_attack) - x[j]*sin(angle_of_attack));
 
@@ -330,21 +318,42 @@ std::vector<double> Matrix_Init::matrix_init_H_lhs_calc(Airfoil_Parameters airfo
 			//======= calculate h_ij_1 =======
 			//================================
 			double temp_h_ij_1;
-			for (auto k = 0; k < n; k++) {
-				f_sigma[k] = h_calc.h_1_integration_function(sigma[k], nx[j], x[i], x[j], x[j+1], ny[j], y[i], y[j], y[j+1]);
-			}
-			misc.neumann_bc(f_sigma);
+			double temp_integration_h1;
+			if (i == j || j == 1) {
+				temp_h_ij_1	=	0;
+			} else {
+				for (auto k = 0; k < n; k++) {
+					f_sigma[k] = h_calc.h_1_integration_function(sigma[k], nx[j], x[i], x[j], x[j+1], ny[j], y[i], y[j], y[j+1]);
+				}
+				misc.neumann_bc(f_sigma);
 
-			//integration process
-			double temp_integration_h1	=	math_f.integral_simpson(sigma, f_sigma);
-			temp_h_ij_1			=	-1*(s[j-1]/(8*M_PI))*temp_integration_h1;
-		
+				//integration process
+				temp_integration_h1	=	math_f.integral_simpson(sigma, f_sigma);
+				temp_h_ij_1		=	-1*(s[j-1]/(8*M_PI))*temp_integration_h1;
+			}
+/*			if (j < 5 && j > 0 && i < 5 && i > 0) {
+				std::cout << i << " " << j << " " << temp_h_ij_1 << " " << temp_integration_h1 << " " << x[i] << " " << y[i] << std::endl;
+				if (j == 1 && i == 0) {
+					misc.print_to_file(f_sigma, "f_sigma_0.dat");
+				} else if (i == 1) {
+					misc.print_to_file(f_sigma, "f_sigma_1.dat");
+				} else if (i == 2) {
+					misc.print_to_file(f_sigma, "f_sigma_2.dat");
+				} else if (i == 3) {
+					misc.print_to_file(f_sigma, "f_sigma_3.dat");
+				} else if (i == 4) {
+					misc.print_to_file(f_sigma, "f_sigma_4.dat");
+				}
+			}
+*/			
 			//================================
 			//======= calculate h_ij_2 =======
 			//================================
 			double temp_h_ij_2;
 			double temp_integration_h2;
-			if (j == 1) {
+			if (i == j || j == 1) {
+				temp_h_ij_2	=	0;
+			} else if (j == 1) {
 				for (auto k = 0; k < n; k++) {
 					f_sigma[k] = h_calc.h_2_integration_function(sigma[k], nx[max_node-1], x[i], x[max_node-1], x[1], ny[max_node-1], y[i], y[max_node-1], y[1]);
 				}
@@ -354,7 +363,6 @@ std::vector<double> Matrix_Init::matrix_init_H_lhs_calc(Airfoil_Parameters airfo
 				temp_integration_h2	=	math_f.integral_simpson(sigma, f_sigma);	
 				temp_h_ij_2		=	-1*(s[max_node-2]/(8*M_PI))*temp_integration_h2;
 		
-
 			} else {
 
 				for (auto k = 0; k < n; k++) {
@@ -380,6 +388,7 @@ std::vector<double> Matrix_Init::matrix_init_H_lhs_calc(Airfoil_Parameters airfo
 			//calculate phi_j
 			double phi_j	=	matrix_init_phi_calc(x[j], y[j], pars);	
 			double temp_sum	=	(temp_h_ij_1 + temp_h_ij_2 + c_delta);
+			
 
 			//sum
 			sum_H_phi	=	sum_H_phi + temp_sum;

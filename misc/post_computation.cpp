@@ -1,5 +1,27 @@
 #include "../global.hpp"
 #include "post_computation.hpp"
+#include "../misc/miscellaneous.hpp"
+
+void Post_Computation::post_main_calculation(Airfoil_Parameters airfoil_pars, Parameters pars, Variables &vars) {
+	
+	Miscellaneous misc;
+	//make local vars
+	std::vector<double> lhs_result		=	vars.lhs_result;
+	std::vector<double> &v_tangential	=	vars.v_tangential;
+	std::vector<double> &cp			=	vars.cp;
+	const double v_freestream		=	pars.v_freestream;
+
+	//compute v_tangential
+	v_tangential	=	post_compute_v_tangential(airfoil_pars, pars, lhs_result);
+
+	//compute cp distribution
+	cp		=	post_compute_cp(v_tangential, v_freestream);
+
+
+	//print to file
+	misc.print_to_file(cp, "cp_distribution.dat");
+	misc.print_to_file(v_tangential, "v_tangential_distribution.dat");
+}
 
 std::vector<double> Post_Computation::post_compute_v_tangential(Airfoil_Parameters airfoil_pars, Parameters pars, std::vector<double> lhs_result) {
 	
@@ -24,7 +46,7 @@ std::vector<double> Post_Computation::post_compute_v_tangential(Airfoil_Paramete
 	return v_tangential;
 }
 
-std::vector<double> Post_Computation::post_compute_cp(std::vector<double> v_tangential, double v_freestream) {
+std::vector<double> Post_Computation::post_compute_cp(std::vector<double> v_tangential, const double v_freestream) {
 	
 	const int n	=	v_tangential.size();
 

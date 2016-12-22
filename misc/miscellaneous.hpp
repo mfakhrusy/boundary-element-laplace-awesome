@@ -11,6 +11,7 @@ class Miscellaneous {
 	//friend classes below can access the functions above (which are privates)
 	friend class Matrix_Solver;
 	friend class Matrix_Init;
+	friend class Post_Computation;
 };
 
 #endif
