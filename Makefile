@@ -14,6 +14,7 @@ HDRS			= 	global.hpp				\
 				solver/matrix_init.hpp			\
 				solver/matrix_solver.hpp		\
 				misc/miscellaneous.hpp			\
+				misc/post_computation.hpp		\
 	
 LIBS			=	
 
@@ -35,6 +36,7 @@ SRCS			= main.cpp					\
 			  solver/matrix_init.cpp			\
 			  solver/matrix_solver.cpp			\
 			  misc/miscellaneous.cpp			\
+			  misc/post_computation.cpp			\
 
 OBJS			= $(SRCS:.cpp=.o) 	
 

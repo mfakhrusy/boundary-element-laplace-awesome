@@ -72,3 +72,26 @@ double Math_Function::discriminant(double a, double b, double c) {
 	
 	return b*b - 4*a*c;
 }
+
+double Math_Function::integral_simpson(std::vector<double> x, std::vector<double> f_x) {
+	
+	int max_node	=	x.size();
+	double x_i	=	x[0];
+	double x_f	=	x[max_node - 1];
+	double temp	=	(x_f - x_i)/(3.0*static_cast<double>(max_node));
+
+	double sum_even = 0;
+	for (auto i = 2; i < max_node-1; i = i+2) {
+		sum_even = sum_even + f_x[i];
+	}
+
+	double sum_odd = 0;
+	for (auto i = 1; i < max_node-1; i = i+2) {
+		sum_odd = sum_odd + f_x[i];
+	}
+
+	double result	=	temp*(f_x[0] + f_x[max_node-1] + 4*sum_odd + 2*sum_even);
+//	std::cout << "tututu: " << result << " " << temp << " " << f_x[0] << " " << f_x[max_node-1] << std::endl;
+	return result;
+
+}

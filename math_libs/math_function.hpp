@@ -12,6 +12,7 @@ class Math_Function {
 	double dgreen_f_dn(double x, double x_ref, double nx, double y, double y_ref, double ny);
 	double knonecker_delta(int i, int j);
 	double discriminant(double a, double b, double c);
+	double integral_simpson(std::vector<double> x, std::vector<double> f_x);
 
 	//friend classes below can access the functions above (which are privates)
 	friend class Airfoil;

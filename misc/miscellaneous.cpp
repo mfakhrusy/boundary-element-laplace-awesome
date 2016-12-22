@@ -26,3 +26,11 @@ void Miscellaneous::print_to_file(std::vector<std::vector<double>> f, std::strin
 	output_file.close();
 
 }
+
+//boundary condition neumann
+void Miscellaneous::neumann_bc(std::vector<double> &F) {
+	
+	int n	=	F.size();
+	F[0]	=	2*F[1] - F[2];
+	F[n-1]	=	2*F[n-2] - F[n-3];
+}
